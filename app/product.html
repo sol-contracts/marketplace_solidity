@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Decentralized Ecommerce Store</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script src="./app.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Marketplace</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Store</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/list-item.html">Sell Product</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br/>
+
+  <div class="container" id="product-details">
+    <div style="display: none;" class="alert alert-success" id="msg"></div>
+    <div class="row">
+      <div class="col-md-2">
+      </div>
+      <div class="col-md-4 item-photo">
+      </div>
+      <div class="col-md-4" style="border:1px solid #f6f6f6;padding-bottom: 15px;">
+        <h3 id="product-name"></h3>
+        <div class="row">
+          <div class="col-md-4">
+            <h6 class="title-price">
+              <small>PRICE</small>
+            </h6>
+            <h3 style="margin-top:0px;">
+              <span id="product-price"></span>
+            </h3>
+          </div>
+          <div class="col-md-4">
+            <h6 class="title-qty">
+              <small>QTY</small>
+            </h6>
+            <h3 style="margin-top:0px;">
+              <span id="product-quantity"></span>
+            </h3>
+          </div>
+        </div>
+        <div class="section" style="padding-bottom:10px;">
+          <form id="buy">
+            <input type="hidden" name="product-id" id="product-id" />
+            <input type="hidden" class="form-control" name="amount" id="amount" required="required">
+            <div class="form-group">
+              <h6 class="title-price">
+                <small>Contact</small>
+              </h6>
+              <input style="margin-top:5px;margin-bottom: 5px;" type="text" name="buyer-contact" class="form-control" id="buyer-contact"
+                placeholder="Delivery Information" required="required"></input>
+            </div>
+            <div class="form-group">
+              <h6 class="title-quantity">
+                <small>Quantity</small>
+              </h6>
+              <input style="margin-top:5px;margin-bottom: 5px;" type="number" name="quantity" class="form-control" id="quantity"
+                placeholder="Qty" value="1"></input>
+            </div>
+            <button class="btn btn-success btn-buy" type="submit">
+              <span aria-hidden="true"></span>Buy</button>
+            </button>
+          </form>
+          <div id="finalized">
+            <h3 style="color: red;">SOLD</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12">
+        <ul class="menu-items">
+          <li class="active">Details</li>
+        </ul>
+        <div style="width:100%;border-top:1px solid silver">
+          <p style="padding:15px;">
+            <small id="product-desc">
+            </small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
