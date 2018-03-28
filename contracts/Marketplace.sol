@@ -135,7 +135,7 @@ contract Marketplace {
 
         // Verify
         require(product.id == _productId);
-        require(msg.value == product.price);
+        require(msg.value >= SafeMath.mul(product.price, _quantity));
         require(product.quantity >= _quantity);
         require(product.status == Status.InStock);
         require(address(0x0) != msg.sender);
@@ -163,5 +163,12 @@ contract Marketplace {
 
         // Transfer money
         seller.transfer(SafeMath.mul(product.price, _quantity));
+    }
+
+    function withdrawTips(uint amount) public {
+        require(msg.sender == owner);
+
+        // Transfer tips
+        msg.sender.transfer(amount);
     }
 }
