@@ -4,6 +4,7 @@ import "./SafeMath.sol";
 
 contract Marketplace {
     address private owner;
+    uint private tips = 0;
     enum Status { InStock, Sold }
     enum ProductCondition { New, Used }
 
@@ -12,7 +13,7 @@ contract Marketplace {
     mapping (address => mapping(uint => Product)) private stores;
     mapping (uint => address) private productIdInStore;
 
-    event LogNewProduct(
+    event onNewProduct(
         uint _productId, 
         string _name, 
         string _category, 
@@ -22,7 +23,7 @@ contract Marketplace {
         uint _productCondition
     );
 
-    event LogProductSell(uint _productId, uint _status);
+    event onProductSell(uint _productId, uint _status);
 
     struct Product {
         uint id;
@@ -58,7 +59,7 @@ contract Marketplace {
         uint _price, 
         string _sellerContact,
         uint _productCondition,
-        uint _quantity) public {
+        uint _quantity) public returns (uint) {
         // Verify
         require(address(0x0) != msg.sender);
         require(_price > 0);
@@ -85,7 +86,9 @@ contract Marketplace {
         productIdInStore[productIndex] = msg.sender;
         productIds.push(productIndex);
 
-        LogNewProduct(productIndex, _name, _category, _imageLink, _descLink, _price, _productCondition);
+        onNewProduct(productIndex, _name, _category, _imageLink, _descLink, _price, _productCondition);
+
+        return productIndex;
     }
 
     function getProduct(uint _productId) public view returns 
@@ -119,23 +122,25 @@ contract Marketplace {
         return SafeMath.mul(product.price, _quantity);
     }
 
-    function update(uint _productId, uint _newQuantity) public view {
+    function update(uint _productId, uint _newQuantity) public {
         address seller = productIdInStore[_productId];
 
         // Verify
         require(seller == msg.sender);
-        Product memory product = stores[seller][_productId];
+        Product storage product = stores[seller][_productId];
 
         product.quantity = _newQuantity;
     }
 
-    function buy(uint _productId, string _buyerContact, uint _quantity) public payable returns (bool) {
+    function buy(uint _productId, string _buyerContact, uint _quantity) public payable {
         address seller = productIdInStore[_productId];
         Product storage product = stores[seller][_productId];
+        uint sum = SafeMath.mul(product.price, _quantity);
 
         // Verify
+        require(_quantity > 0);
         require(product.id == _productId);
-        require(msg.value >= SafeMath.mul(product.price, _quantity));
+        require(msg.value >= sum);
         require(product.quantity >= _quantity);
         require(product.status == Status.InStock);
         require(address(0x0) != msg.sender);
@@ -145,18 +150,23 @@ contract Marketplace {
         product.quantity = SafeMath.sub(product.quantity, _quantity);
         product.status = product.quantity > 0 ? Status.InStock : Status.Sold;
         product.forPayment = SafeMath.add(product.forPayment, _quantity);
+
+        // Tips
+        if (msg.value > SafeMath.mul(product.price, _quantity)) {
+            tips = SafeMath.add(tips, SafeMath.sub(msg.value, sum));
+        }
         
         // Event
-        LogProductSell(_productId, product.quantity > 0 ? 0 : 1);
-        return true;
+        onProductSell(_productId, product.quantity > 0 ? 0 : 1);
     }
 
     function withdraw(uint _productId, uint _quantity) public {
+        require(_quantity > 0);
         address seller = productIdInStore[_productId];
         // Verify
         require(seller == msg.sender);
 
-        Product memory product = stores[seller][_productId];
+        Product storage product = stores[seller][_productId];
         require(product.forPayment >= _quantity);
 
         product.forPayment = SafeMath.sub(product.forPayment, _quantity);
@@ -165,10 +175,13 @@ contract Marketplace {
         seller.transfer(SafeMath.mul(product.price, _quantity));
     }
 
-    function withdrawTips(uint amount) public {
+    function withdrawTips() public {
         require(msg.sender == owner);
+        require(tips > 0);
+        uint toTransfer = tips;
+        tips = 0;
 
         // Transfer tips
-        msg.sender.transfer(amount);
+        owner.transfer(toTransfer);
     }
 }

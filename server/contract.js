@@ -1,6 +1,6 @@
 module.exports = (Marketplace, ProductModel) => {
   Marketplace.deployed().then((contract) => {
-    contract.LogNewProduct({ fromBlock: 0, toBlock: 'latest' })
+    contract.onNewProduct({ fromBlock: 0, toBlock: 'latest' })
       .watch((err, result) => {
         if (err) {
           return console.log(err)
@@ -8,7 +8,7 @@ module.exports = (Marketplace, ProductModel) => {
         saveProduct(result.args)
       })
 
-    contract.LogProductSell({ fromBlock: 0, toBlock: 'latest' })
+    contract.onProductSell({ fromBlock: 0, toBlock: 'latest' })
       .watch((err, result) => {
         if (err) {
           return console.log(err)
