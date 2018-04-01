@@ -92,6 +92,19 @@ contract('Marketplace', function (accounts) {
     const result = await contract.getProduct(id)
     assert.equal(result[6], qty)
   })
+  
+  it('shouldn\'t be able to update the quantity', async function() {
+    const contract = await Marketplace.deployed()
+    const id = 1
+    const qty = 2
+
+    try {
+      await contract.update(id, qty, { from: accounts[1]} )
+      assert.isNull(res) // This line shouldn't be reachable
+    } catch (e) {
+      assert.ok(e)
+    }
+  })
 
   it('should be able to buy a product', async function() {
     const contract = await Marketplace.deployed()
